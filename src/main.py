@@ -354,19 +354,18 @@ if __name__ == '__main__':
         
         with open(os.path.join(save_dir, 'test_results.pkl'), 'wb') as f:
             pickle.dump(test_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
+ 
 
-    else:    
+    preds, real, wsis, projs = evaluate(model, test_dataloader, run=run, suff="")
 
-        preds, real, wsis, projs = evaluate(model, test_dataloader, run=run, suff="")
+    test_results_splits = {
+        "real": real,
+        "preds": preds,
+        "random": None,  # Add random predictions if required
+        "wsi_file_name": wsis,
+        "tcga_project": projs,
+        "genes": [x.removeprefix(args.rna_prefix) for x in df.columns if x.startswith(args.rna_prefix)],
+    }
 
-        test_results_splits = {
-            "real": real,
-            "preds": preds,
-            "random": None,  # Add random predictions if required
-            "wsi_file_name": wsis,
-            "tcga_project": projs,
-            "genes": [x.removeprefix(args.rna_prefix) for x in df.columns if x.startswith(args.rna_prefix)],
-        }
-
-        with open(os.path.join(save_dir, 'test_results.pkl'), 'wb') as f:
-            pickle.dump(test_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
+    with open(os.path.join(save_dir, 'test_results.pkl'), 'wb') as f:
+        pickle.dump(test_results_splits, f, protocol=pickle.HIGHEST_PROTOCOL)
